@@ -1,0 +1,34 @@
+[ 1 2 3 4 ]
+
+
+{
+
+}
+
+
+1 = 2
+
+10
+10.1
+.11
+
+1
+=
+2
+
+1 2 3
+
+1
+2
+
+{ 1 2 3 }
+
+{ 1 2 3 4 }
+
+map = {
+    integer_number = 10
+    string_without_spaces = string_value
+    string_with_spaces = "string value"
+    tagged_map = ( key = value )
+    tagged_list = ( list_value )
+}

@@ -1,0 +1,29 @@
+(* tokens *)
+
+(*
+    separators:
+    * any positive number of whitespaces
+    * special symbols: =[]{}
+    * equal sign (=)
+*)
+
+WHITESPACE = ? whitespace character ? ;
+NON_WHITESPACE = ? non-whitespace character ? ;
+DIGIT = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+DIGITS = DIGIT, { DIGIT } ;
+(* ".1" and "1." are not allowed, "0.1" and "1.0" are required *)
+
+DECIMAL = DIGITS, ".", DIGITS ;
+STRING = NON_WHITESPACE, { NON_WHITESPACE }
+       | "'", { NON_SINGLE_QUOTE }, "'"
+       | '"', { NON_DOUBLE_QUOTE }, '"' ;
+
+(* syntax *)
+
+scalar = DIGITS | DECIMAL | STRING ;
+list   = { value } ;
+map    = { string, "=", value } ;
+
+value = scalar
+      | "{", list, "}"
+      | "{", map, "}" ;

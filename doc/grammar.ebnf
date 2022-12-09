@@ -7,7 +7,7 @@
     * equal sign (=)
 *)
 
-WHITESPACE = ? whitespace character ? ;
+WHITESPACE = " " | "\t" | "\n" | "\r" ;
 NON_WHITESPACE = ? non-whitespace character ? ;
 DIGIT = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 DIGITS = DIGIT, { DIGIT } ;
@@ -20,10 +20,10 @@ STRING = NON_WHITESPACE, { NON_WHITESPACE }
 
 (* syntax *)
 
-scalar = DIGITS | DECIMAL | STRING ;
-list   = { value } ;
-map    = { string, "=", value } ;
+(* this is what a snack file is *)
+document = [ message ], { prophecy, message } ;
 
-value = scalar
-      | "{", list, "}"
-      | "{", map, "}" ;
+prophecy = "[", document, "]" ;
+message = { value | key, "=", value } ;
+value = scalar | "{", document, "}" ;
+scalar = DIGITS | DECIMAL | STRING ;

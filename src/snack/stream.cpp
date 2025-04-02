@@ -1,4 +1,4 @@
-#include "snack/stream.hpp"
+#include "stream.hpp"
 
 #include <cassert>
 #include <sstream>

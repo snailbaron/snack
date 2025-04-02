@@ -1,6 +1,5 @@
-#include "snack/token.hpp"
-
-#include "snack/error.hpp"
+#include "error.hpp"
+#include "token.hpp"
 
 #include <cstdio>
 
@@ -22,6 +21,7 @@ std::ostream& operator<<(std::ostream& output, const Token& token)
             return output << "literal [" << token.text << "]";
         case Token::Type::End: return output << "end";
     }
+    return output;
 }
 
 Tokenizer::Tokenizer(std::istream& input)
@@ -63,8 +63,6 @@ Token Tokenizer::operator()()
     }
 
     throw Error{
-        _stream.lineNumber(),
-        _stream.columnNumber(),
         std::string{"unexpected symbol: "} + (char)_stream.peek()};
 }
 

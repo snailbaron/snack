@@ -1,6 +1,6 @@
 #pragma once
 
-#include "snack/stream.hpp"
+#include "stream.hpp"
 
 #include <istream>
 #include <ostream>

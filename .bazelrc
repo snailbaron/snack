@@ -1,0 +1,2 @@
+common --copt=-std=c++23
+common --copt=-fdiagnostics-color=always

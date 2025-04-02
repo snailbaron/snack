@@ -10,14 +10,16 @@ namespace snack {
 
 struct Token {
     enum class Type {
-        Integer,
-        Decimal,
-        String,
-
-        Equ,  // =
-        Open,  // {
-        Close,  // }
-
+        Equ,
+        Join,
+        StartList,
+        EndList,
+        StartDict,
+        EndDict,
+        SingleQuote,
+        DoubleQuote,
+        Backtick,
+        Literal,
         End,
     };
 

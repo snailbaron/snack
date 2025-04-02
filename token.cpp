@@ -1,5 +1,7 @@
 #include "snack/token.hpp"
 
+#include "snack/error.hpp"
+
 #include <cstdio>
 
 namespace snack {
@@ -7,20 +9,19 @@ namespace snack {
 std::ostream& operator<<(std::ostream& output, const Token& token)
 {
     switch (token.type) {
-        case Token::Type::Integer: output << "int";
-        case Token::Type::Decimal: output << "dec";
-        case Token::Type::String: output << "str";
-        case Token::Type::Equ: output << "=";
-        case Token::Type::Open: output << "{";
-        case Token::Type::Close: output << "}";
-        case Token::Type::End: output << "end";
+        case Token::Type::Equ: return output << "=";
+        case Token::Type::Join: return output << ".";
+        case Token::Type::StartList: return output << "[";
+        case Token::Type::EndList: return output << "]";
+        case Token::Type::StartDict: return output << "{";
+        case Token::Type::EndDict: return output << "}";
+        case Token::Type::SingleQuote: return output << "'";
+        case Token::Type::DoubleQuote: return output << "\"";
+        case Token::Type::Backtick: return output << "`";
+        case Token::Type::Literal:
+            return output << "literal [" << token.text << "]";
+        case Token::Type::End: return output << "end";
     }
-
-    if (token.type != Token::Type::End) {
-        output << " [" << token.text << "]";
-    }
-
-    return output;
 }
 
 Tokenizer::Tokenizer(std::istream& input)
@@ -29,28 +30,42 @@ Tokenizer::Tokenizer(std::istream& input)
 
 Token Tokenizer::operator()()
 {
-    if (!_input.good()) {
+    _stream.skip([] (int c) { return std::isspace(c); });
+
+    if (_stream.peek() == EOF) {
         return {.type = Token::Type::End};
     }
 
-    int c = _input.get();
-
-    while (std::isspace(c)) {
-        c = _input.get();
+    if (_stream.tryRead('=')) {
+        return {.type = Token::Type::Equ, .text = "="};
+    }
+    if (_stream.tryRead('.')) {
+        return {.type = Token::Type::Join, .text = "."};
+    }
+    if (_stream.tryRead('[')) {
+        return {.type = Token::Type::StartList, .text = "["};
+    }
+    if (_stream.tryRead(']')) {
+        return {.type = Token::Type::EndList, .text = "]"};
+    }
+    if (_stream.tryRead('{')) {
+        return {.type = Token::Type::StartDict, .text = "{"};
+    }
+    if (_stream.tryRead('}')) {
+        return {.type = Token::Type::EndDict, .text = "}"};
     }
 
-    if (c == '"') {
-        std::string text = "\"";
-        c = _input.get();
-        while (c != '"' && c != EOF) {
-            text += c;
-            c = _input.get();
+    for (char c : {'"', '\'', '`'}) {
+        if (_stream.peek() == c) {
+            auto text = _stream.readUntil(c, 2);
+            return {.type = Token::Type::Literal, .text = std::move(text)};
         }
-        if (c == '"') {
-            text += c;
-        }
-        c = _input.get();
     }
+
+    throw Error{
+        _stream.lineNumber(),
+        _stream.columnNumber(),
+        std::string{"unexpected symbol: "} + (char)_stream.peek()};
 }
 
 } // namespace snack
